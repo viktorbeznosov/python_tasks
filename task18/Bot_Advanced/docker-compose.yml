@@ -1,0 +1,12 @@
+services:
+  bot:
+    build:
+      context: .  # Контекст сборки (текущая директория)
+    image: bot_advanced:v1  # Укажите имя образа
+    container_name: bot-container  # Имя контейнера
+    restart: always  # Перезапуск контейнера при остановке
+    env_file:  # Файл с переменными окружения
+      - .env
+    volumes:  # Монтируем файл
+      - ./bot.log:/app/bot.log  # Локальный файл bot.log монтируется в /app/bot.log внутри контейнера
+      - ./table:/app/table

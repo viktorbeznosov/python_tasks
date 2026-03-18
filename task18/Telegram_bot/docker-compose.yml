@@ -1,0 +1,14 @@
+﻿services:
+  bot:
+    build:
+      context: . # где находится Dockerfile
+      dockerfile: Dockerfile # Явно указываем Dockerfile
+    image: bot_secure_trains:v1
+    container_name: bot_secure_trains
+    environment:
+      - PYTHONUNBUFFERED=1 # Для отображения логов в реальном времени
+    volumes:
+      - .:/Telegram_Bot
+      - ./logs:/Telegram_Bot/logs
+      - ./table:/app/table
+    restart: unless-stopped

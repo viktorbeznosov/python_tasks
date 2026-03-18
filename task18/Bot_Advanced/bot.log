@@ -1,0 +1,43 @@
+
+2025-02-12 09:18:28,912 - INFO - Start polling
+2025-02-12 09:18:29,228 - INFO - Run polling for bot @GPT_AI_example_bot id=6838889550 - 'Bot AI GPT'
+2025-02-12 09:18:38,461 - INFO - Update id=465271297 is handled. Duration 1029 ms by bot id=6838889550
+2025-02-12 09:18:50,383 - INFO - Update id=465271298 is handled. Duration 389 ms by bot id=6838889550
+2025-02-12 09:18:55,260 - INFO - Update id=465271299 is handled. Duration 320 ms by bot id=6838889550
+2025-02-12 09:19:08,405 - INFO - Update id=465271300 is handled. Duration 569 ms by bot id=6838889550
+2025-02-12 09:19:13,522 - INFO - Update id=465271301 is handled. Duration 710 ms by bot id=6838889550
+2025-02-12 09:19:18,283 - INFO - Update id=465271302 is handled. Duration 753 ms by bot id=6838889550
+2025-02-12 09:19:34,295 - INFO - Update id=465271303 is handled. Duration 355 ms by bot id=6838889550
+2025-02-12 09:19:37,520 - INFO - Update id=465271304 is handled. Duration 358 ms by bot id=6838889550
+2025-02-12 09:19:41,982 - INFO - Update id=465271305 is handled. Duration 345 ms by bot id=6838889550
+2025-02-12 09:19:54,243 - INFO - Update id=465271306 is handled. Duration 791 ms by bot id=6838889550
+2025-02-12 09:20:03,270 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 09:20:03,701 - INFO - Update id=465271307 is handled. Duration 7020 ms by bot id=6838889550
+2025-02-12 09:20:12,601 - INFO - Update id=465271308 is handled. Duration 480 ms by bot id=6838889550
+2025-02-12 09:20:15,663 - INFO - Update id=465271309 is handled. Duration 453 ms by bot id=6838889550
+2025-02-12 09:20:19,741 - INFO - Update id=465271310 is handled. Duration 339 ms by bot id=6838889550
+2025-02-12 09:20:31,557 - INFO - Update id=465271311 is handled. Duration 339 ms by bot id=6838889550
+2025-02-12 09:20:37,291 - INFO - Update id=465271312 is handled. Duration 332 ms by bot id=6838889550
+2025-02-12 09:20:48,577 - INFO - Update id=465271313 is handled. Duration 323 ms by bot id=6838889550
+2025-02-12 09:20:54,338 - INFO - Update id=465271314 is handled. Duration 362 ms by bot id=6838889550
+2025-02-12 09:20:59,176 - INFO - Update id=465271315 is handled. Duration 403 ms by bot id=6838889550
+2025-02-12 09:21:05,957 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 09:21:06,659 - INFO - Update id=465271316 is handled. Duration 3391 ms by bot id=6838889550
+2025-02-12 09:21:19,288 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-12 09:21:40,444 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 09:21:41,947 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-12 09:21:44,517 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 09:21:45,254 - INFO - Update id=465271317 is handled. Duration 32468 ms by bot id=6838889550
+2025-02-12 09:22:06,550 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 09:22:07,753 - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-02-12 09:22:15,593 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 09:22:16,477 - INFO - Update id=465271318 is handled. Duration 11525 ms by bot id=6838889550
+2025-02-12 09:22:27,345 - INFO - Update id=465271319 is handled. Duration 345 ms by bot id=6838889550
+2025-02-12 09:22:37,950 - INFO - Update id=465271320 is handled. Duration 352 ms by bot id=6838889550
+2025-02-12 09:22:43,573 - INFO - Update id=465271321 is handled. Duration 340 ms by bot id=6838889550
+2025-02-12 09:22:58,988 - INFO - Update id=465271322 is handled. Duration 437 ms by bot id=6838889550
+2025-02-12 09:23:08,802 - INFO - Update id=465271323 is handled. Duration 343 ms by bot id=6838889550
+2025-02-12 09:23:20,597 - INFO - Update id=465271324 is handled. Duration 453 ms by bot id=6838889550
+2025-02-12 09:24:32,952 - WARNING - Received SIGTERM signal
+2025-02-12 09:24:32,953 - INFO - Polling stopped for bot @GPT_AI_example_bot id=6838889550 - 'Bot AI GPT'
+2025-02-12 09:24:32,954 - INFO - Polling stopped
