@@ -1,0 +1,169 @@
+<!-- templates/index/js/card.html -->
+
+<script>
+
+/*
+    card.html
+    -----------------------------------
+    Отвечает за:
+    - создание карточек отчётов
+    - очистку контейнера
+    - подготовку UI для прогресса и иконок
+*/
+
+
+/*
+    Контейнер, в который будут добавляться карточки отчётов.
+    Предполагается, что в content.html существует элемент:
+    
+    <div id="reportsContainer"></div>
+*/
+const reportsContainer = document.getElementById("reportsContainer");
+
+
+/*
+    Полная очистка всех карточек.
+    Используется, например, перед загрузкой нового файла.
+*/
+function clearReports() {
+    reportsContainer.innerHTML = "";
+}
+
+// ----------------------
+// Создание мини-карточки с заголовком
+// ----------------------
+function createReportCard(title, iconType = null, result = null, code = null) {
+    const card = document.createElement("div");
+    card.className = "card shadow-sm text-center";
+    card.dataset.code = code || "";
+    card.dataset.title = title || "";
+    card.dataset.result = result || "";
+    
+    // Стили карточки
+    card.style.width = "240px";
+    card.style.height = "140px";
+    card.style.display = "flex";
+    card.style.alignItems = "center";
+    card.style.justifyContent = "center";
+    card.style.marginBottom = "5px";
+    card.style.cursor = "pointer";
+    card.style.padding = "10px";
+    card.style.boxSizing = "border-box";
+    card.style.fontSize = "18px";
+
+    // Заголовок
+    const cardHeader = document.createElement("div");
+    cardHeader.className = "fw-bold";
+    cardHeader.style.margin = "0";
+    cardHeader.innerText = title;
+    card.appendChild(cardHeader);
+
+    // Определяем иконку в зависимости от типа
+    if (iconType) {
+        const icon = document.createElement("i");
+        let iconClass = '';
+        
+        switch(iconType) {
+            case 'plus':
+                iconClass = 'fas fa-plus';
+                break;
+            case 'loading':
+                iconClass = 'fas fa-circle-notch fa-spin';
+                break;
+            case 'error':
+                iconClass = 'fas fa-exclamation-triangle';
+                break;
+            default:
+                iconClass = '';
+        }
+        
+        icon.className = iconClass;
+        icon.style.marginTop = "0";
+        icon.style.fontSize = "2rem";
+        icon.style.color = "rgba(0, 0, 0, 0.2)";
+        card.appendChild(icon);
+
+    }
+
+    // Прогресс-бар (сразу создаём, но скрываем)
+    const progressDiv = document.createElement('div');
+    progressDiv.className = 'progress w-75 mt-2';
+    progressDiv.style.display = "none";
+    progressDiv.style.width = "100%";
+    progressDiv.style.position = "relative";
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.role = 'progressbar';
+    progressBar.style.display = "block";   
+    progressBar.style.flex = "none";       
+    progressBar.style.minWidth = "0";      
+    progressBar.style.height = "100%";
+    progressBar.style.transition = "width 0.6s linear";
+    progressBar.style.backgroundColor = "#000";
+    progressBar.style.borderRadius = "0";                      
+    progressDiv.appendChild(progressBar);
+    card.appendChild(progressDiv);
+
+    reportsContainer.appendChild(card);
+}
+
+// Обработчик событий
+reportsContainer.addEventListener('click', async (event) => {
+    const target = event.target;
+    const card = target.closest('.card');
+    
+    if (!card) return;
+
+    // Проверяем, есть ли иконка +
+    const plusIcon = card.querySelector('.fa-plus');
+
+    if (plusIcon) {
+        // Если включен AUTO — запускаем auto-режим
+        if (isChecked) {
+            plusIcon.style.display = 'none';
+            const progressDiv = card.querySelector('.progress');
+            const progressBar = progressDiv.querySelector('.progress-bar');
+            if (progressDiv) progressDiv.style.display = 'block';
+            if (progressBar) progressBar.style.width = '0%';
+
+            try {
+                await handleApiRequest(
+                    'POST',
+                    `${API_URL}/neuro/auto`,
+                    { code: '' },  // пустой код для авто
+                    (autoResult) => {
+                        console.log("Auto completed:", autoResult);
+                    }
+                );
+                if (progressDiv) progressDiv.style.display = 'none';
+            } catch (err) {
+                if (progressDiv) progressDiv.style.display = 'none';
+                console.error("Ошибка auto-режима:", err);
+                createReportCard("Ошибка", 'error');
+            }
+
+        } else {
+            // Стандартное поведение — вызов next
+            plusIcon.style.display = 'none';
+            const progressDiv = card.querySelector('.progress');
+            const progressBar = progressDiv.querySelector('.progress-bar');
+            if (progressDiv) progressDiv.style.display = 'block';
+            if (progressBar) progressBar.style.width = '0%';
+
+            try {
+                await handleApiRequest('GET', `${API_URL}/neuro/next`);
+                if (progressDiv) progressDiv.style.display = 'none';
+            } catch (err) {
+                if (progressDiv) progressDiv.style.display = 'none';
+                console.error("Ошибка следующего шага:", err);
+                createReportCard("Ошибка", 'error');
+            }
+        }
+
+    } else {
+        openModal(card);
+    }
+});
+
+
+</script>

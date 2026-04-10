@@ -1,0 +1,49 @@
+<!-- templates/index/scripts/upload.html -->
+
+<script>
+/**
+ * upload.js (в шаблоне upload.html)
+ * ---------------------------------
+ * Модуль только с функцией-обработчиком загрузки аудио.
+ */
+
+function initAudioLoader(API_URL) {
+    // Находим input для загрузки аудио
+    const audioInput = document.getElementById("audioInput");
+    if (!audioInput) {
+        console.warn("audioInput не найден на странице");
+        return;
+    }
+
+    // Назначаем обработчик события change
+    audioInput.addEventListener("change", async () => {
+        const file = audioInput.files[0];
+        if (!file) return;
+
+        // Очистка старых карточек
+        clearReports(); 
+
+        // Подготовка FormData для отправки
+        const formData = new FormData();
+        formData.append("file", file);
+
+        // Отправка файла на backend
+        try {
+            await handleApiRequest('POST', `${API_URL}/neuro/start`, formData);
+            if (isChecked) {
+                await handleApiRequest(
+                    'POST',
+                    `${API_URL}/neuro/auto`,
+                    { code: 'transcribe' },
+                    (autoResult) => {
+                        console.log("Результат auto-режима:", autoResult);
+                    }
+                );
+            }
+        } catch (error) {
+            console.error("Ошибка загрузки файла:", error);
+            createReportCard("Ошибка");
+        }
+    });
+}
+</script>

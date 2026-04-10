@@ -1,0 +1,86 @@
+<!-- templates/index/js/checkbox.html -->
+
+<script>
+
+/*
+    checkbox.html
+    ---------------------------------------
+    Отвечает за:
+    - управление кастомным чекбоксом AUTO
+    - переключение визуального состояния
+    - программное задание стилей (без CSS-файла)
+*/
+
+
+/*
+    Получаем элементы из DOM.
+*/
+const checkboxContainer = document.getElementById('checkboxContainer');
+const checkboxIcon = document.getElementById('checkboxIcon');
+
+
+/*
+    Текущее состояние чекбокса
+*/
+let isChecked = false;
+
+
+/*
+    Если элементы существуют — настраиваем поведение
+*/
+if (checkboxContainer && checkboxIcon) {
+
+    /*
+        ===== ЗАДАНИЕ СТИЛЕЙ ЧЕРЕЗ JS =====
+        Аналог CSS:
+
+        #checkboxContainer { ... }
+    */
+    checkboxContainer.style.width = "120px";
+    checkboxContainer.style.height = "38px";
+    checkboxContainer.style.border = "1px solid #ced4da";
+    checkboxContainer.style.display = "flex";
+    checkboxContainer.style.alignItems = "center";
+    checkboxContainer.style.justifyContent = "center";
+    checkboxContainer.style.borderRadius = "4px";
+    checkboxContainer.style.backgroundColor = "white";
+    checkboxContainer.style.cursor = "pointer";
+
+
+    /*
+        Аналог CSS:
+
+        #checkboxContainer i { ... }
+    */
+    checkboxIcon.style.marginRight = "10px";
+    checkboxIcon.style.fontSize = "22px";
+    checkboxIcon.style.color = "black";
+
+
+    /*
+        Обработчик клика
+    */
+    checkboxContainer.addEventListener('click', () => {
+
+        // Переключаем состояние
+        isChecked = !isChecked;
+
+        // Меняем иконку
+        checkboxIcon.className = isChecked
+            ? 'fa-regular fa-square-check'
+            : 'fa-regular fa-square';
+
+        /*
+            Аналог CSS:
+
+            #checkboxContainer.checked { ... }
+
+            Можно дополнительно визуально менять состояние
+            (пока у тебя фон остаётся белым)
+        */
+        checkboxContainer.style.backgroundColor = "white";
+    });
+
+}
+
+</script>

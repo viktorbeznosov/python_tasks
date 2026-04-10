@@ -1,0 +1,84 @@
+<!-- app/templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block styles %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .container {
+        height: calc(100vh - 70px - 1rem);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .header-block {
+        flex-shrink: 0;
+    }
+
+    #reportsContainer {
+        flex: 1 1 auto;
+        min-height: 0; 
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 4px;
+    }
+</style>    
+{% endblock %}
+
+{% block content %}
+    {% include "index/content.html" %}
+{% endblock %}
+
+{% block scripts %}
+
+    {# Глобальные переменные конфигурации #}
+    <script>
+        const API_URL = "{{ API_URL }}";
+    </script>
+
+    {# Низкоуровневые утилиты #}
+    {% include "index/js/api.html" %}
+
+    {# WebSocket #}
+    {% include "index/js/websocket.html" %}
+
+    {# UI-логика #}
+    {% include "index/js/checkbox.html" %}
+    {% include "index/js/card.html" %}
+    {% include "index/js/modal.html" %}
+    {% include "index/js/state.html" %}
+
+    {# Loader #}
+    {% include "index/js/upload.html" %}
+
+    {# Запуск #}
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Инициализация загрузчика
+        initAudioLoader(API_URL);
+
+        // Восстановление состояния шагов
+        loadState();
+
+        // Подключение WebSocket
+        connectWebSocket();
+
+        // Создание модального окна
+        createModal();
+    });
+    </script>    
+
+{% endblock %}

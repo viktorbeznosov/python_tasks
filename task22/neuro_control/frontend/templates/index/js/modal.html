@@ -1,0 +1,167 @@
+<!-- templates/index/js/modal.html -->
+
+<script>
+let currentModalCard = null;
+
+// Создание модального окна
+function createModal() {
+    const modal = document.createElement("div");
+    modal.id = "customModal";
+    modal.style.cssText = `
+        position: fixed; top:0; left:0; width:100%; height:100%;
+        background: rgba(0,0,0,0.5); display:none;
+        justify-content:center; align-items:center; z-index:9999;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background:#f9f9f9;
+            width:70%;
+            max-height:80%;
+            height: calc(100% - 20%);
+            display:flex;
+            flex-direction:column;
+            border-radius:10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            overflow:hidden;
+        ">
+            <div id="modalTitle" style="
+                padding:20px 20px 15px 20px;
+                font-weight:bold;
+                font-size:24px;
+                border-bottom:1px solid #ccc;
+                background:#eee;
+            "></div>
+
+            <div id="modalBody" style="
+                padding:15px;
+                flex:1;
+                overflow-y:auto;
+                background:white;
+                margin:10px;
+                border-radius:5px;
+                box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+                font-size:24px;
+            "></div>
+
+            <div style="
+                padding:15px 20px;
+                border-top:1px solid #ccc;
+                text-align:right;
+                background:#f5f5f5;
+            ">
+                <button id="refreshBtn" class="btn btn-light btn-sm shadow-sm me-2">Обновить</button>
+                <button id="closeBtn" class="btn btn-secondary btn-sm shadow">Закрыть</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Закрытие модалки
+    modal.querySelector("#closeBtn").addEventListener("click", () => {
+        console.log("Закрытие модалки");
+        modal.style.display = "none";
+    });
+
+    // Обновление данных с закрытием модалки перед вызовом
+    modal.querySelector("#refreshBtn").addEventListener("click", () => {
+        console.log("Нажата кнопка Обновить");
+
+        // Сначала закрываем окно
+        modal.style.display = "none";
+
+        // Через setTimeout, чтобы перерисовка успела отработать
+        setTimeout(() => {
+            refreshModal().catch(err => console.error("Ошибка в refreshModal:", err));
+        }, 0);
+    });
+}
+
+// Открытие модалки по карточке
+function openModal(card) {
+    currentModalCard = card;
+
+    const modal = document.getElementById("customModal");
+    const refreshBtn = modal.querySelector("#refreshBtn");
+
+    modal.querySelector("#modalTitle").innerText = card.dataset.title || "Отчет";
+    modal.querySelector("#modalBody").innerText = card.dataset.result || "";
+
+    // Сохраняем code для использования в refresh
+    modal.dataset.code = card.dataset.code || card.dataset.title;
+    console.log('Modal code: ' + modal.dataset.code)
+
+    // Блокировка кнопки "Обновить", если код == 'upload'
+    if (card.dataset.code === "upload") {
+        refreshBtn.disabled = true;               // реально отключаем
+        refreshBtn.classList.add('btn-secondary'); // меняем цвет на серый
+        refreshBtn.classList.remove('btn-light'); // убираем светлый стиль
+    } else {
+        refreshBtn.disabled = false;
+        refreshBtn.classList.remove('btn-secondary');
+        refreshBtn.classList.add('btn-light');
+    }
+
+    modal.style.display = "flex";
+}
+
+// Функция обновления модалки
+async function refreshModal() {
+    if (!currentModalCard) return;
+
+    const cardCode = currentModalCard.dataset.code;
+
+    // Если код upload — запрещаем refresh
+    if (cardCode === "upload") {
+        console.warn("Обновление запрещено для шага upload");
+        return;
+    }
+
+    console.log("refreshModal:", { cardCode, isChecked });
+
+    // 1. Удаляем все карточки после текущей
+    let next = currentModalCard.nextElementSibling;
+    while (next) {
+        const toRemove = next;
+        next = next.nextElementSibling;
+        toRemove.remove();
+    }
+
+    // 2. Сбрасываем текущую карточку
+    currentModalCard.dataset.title = "";
+    currentModalCard.dataset.result = "";
+    const progressDiv = currentModalCard.querySelector('.progress');
+    const progressBar = progressDiv?.querySelector('.progress-bar');
+    if (progressDiv) progressDiv.style.display = 'block';
+    if (progressBar) progressBar.style.width = '0%';
+
+    // 3. Закрываем модалку
+    document.getElementById("customModal").style.display = "none";
+
+    // 4. Вызов API
+    if (isChecked) {
+        console.log("Запуск авто-режима");
+        await handleApiRequest(
+            'POST',
+            `${API_URL}/neuro/auto`,
+            { code: cardCode },
+            (autoResult) => console.log("Auto completed:", autoResult)
+        );
+    } else {
+        if (!cardCode) {
+            console.error("Не указан код шага для step!");
+            return;
+        }
+        console.log("Вызов step для кода:", cardCode);
+        await handleApiRequest(
+            'POST',
+            `${API_URL}/neuro/step`,
+            { code: cardCode }
+        );
+    }
+}
+
+// Создаём модалку сразу
+createModal();
+</script>

@@ -1,0 +1,173 @@
+<!-- templates/index/js/websocket.html -->
+
+<script>
+/**
+ * websocket.html
+ * -----------------
+ * Скрипт для подключения WebSocket к backend и получения прогресса
+ * обработки аудио/шагов нейроанализа в реальном времени.
+ *
+ * Почему здесь:
+ * - У нас учебный проект, подключаем через include в index.html
+ * - Вынесение в отдельный файл улучшает читаемость
+ * - Позволяет менять логику WS отдельно от остального JS
+ *
+ * Функции:
+ * - connectWebSocket() — основная функция инициализации WS
+ * 
+ * Основные моменты:
+ * - Используем JWT для авторизации WS
+ * - Обновляем прогресс-бар последней карточки на странице
+ * - Логируем ошибки
+ */
+
+let ws = null; // Глобальная переменная для хранения экземпляра WebSocket
+
+/**
+ * connectWebSocket
+ * ----------------
+ * Инициализация WebSocket:
+ * 1. Закрываем старое соединение, если оно есть
+ * 2. Получаем JWT для авторизации
+ * 3. Формируем URL WebSocket (ws или wss)
+ * 4. Создаём WebSocket и вешаем события:
+ *    - onopen: отправка JWT
+ *    - onmessage: обновление прогресс-бара
+ *    - onclose: логирование закрытия
+ *    - onerror: логирование ошибок
+ */
+function connectWebSocket() {
+
+    // Если есть старое соединение, закрываем его
+    if (ws) ws.close();
+
+    // ----------------------------
+    // Получаем JWT для авторизации
+    // ----------------------------
+    // getJWT() должна возвращать Promise с токеном
+    getJWT().then(jwt => {
+
+        // ----------------------------
+        // Формируем URL WebSocket
+        // ----------------------------
+        // wss для https, ws для http
+        const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsHost = window.location.hostname;
+        const WS_PORT = 5000;  // порт backend для WS
+        const wsUrl = `${wsProtocol}://${wsHost}:${WS_PORT}/ws`;
+
+        // Создаём объект WebSocket
+        ws = new WebSocket(wsUrl);
+
+        // ----------------------------
+        // onopen — соединение установлено
+        // ----------------------------
+        ws.onopen = () => {
+            // Авторизация: отправляем JWT на сервер
+            ws.send(JSON.stringify({ type: "auth", token: jwt }));
+        };
+
+        // ----------------------------
+        // onmessage — получаем сообщения от backend
+        // ----------------------------
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('WS получен: ' + data.type + ' : ' + data.progress)
+
+                const cards = Array.from(reportsContainer.children);
+                if (!cards.length) return;
+
+                const card = cards[cards.length - 1]; // текущая карточка
+
+                // =========================
+                // START
+                // =========================
+                if (data.type === "start") {
+
+                    const plusIcon = card.querySelector('.fa-plus');
+                    if (plusIcon) {
+                        plusIcon.style.display = 'none';
+                    }
+
+                    const progressDiv = card.querySelector('.progress');
+                    const progressBar = card.querySelector('.progress-bar');
+
+                    if (progressDiv) progressDiv.style.display = 'block';
+                    if (progressBar) progressBar.style.width = '0%';
+                }
+
+                // =========================
+                // PROGRESS
+                // =========================
+                if (data.type === "progress") {
+
+                    const progressBar = card.querySelector(".progress-bar");
+                    if (progressBar && typeof data.progress === "number") {
+                        progressBar.style.width = data.progress + "%";
+                    }
+                }
+
+                // =========================
+                // END
+                // =========================
+                if (data.type === "end") {
+
+                    const result = data;
+
+                    // Находим последнюю карточку
+                    const plusCards = reportsContainer.querySelectorAll('.card');
+
+                    if (plusCards.length > 0) {
+                        const lastPlusCard = plusCards[plusCards.length - 1];
+
+                        lastPlusCard.innerHTML = `
+                            <div class="fw-bold">${result.title}</div>
+                        `;
+
+                        lastPlusCard.dataset.code = result.code;
+                        lastPlusCard.dataset.title = result.title;
+                        lastPlusCard.dataset.result = result.result || "";
+                        const progressDiv = lastPlusCard.querySelector('.progress');
+                        const progressBar = progressDiv?.querySelector('.progress-bar');
+                        if (progressDiv) progressDiv.style.display = 'none';                        
+                    }
+
+                    // Добавляем новую карточку с плюсом, если процесс не завершен
+                    if (!result.is_complete) {
+                        createReportCard('', 'plus');
+                    }
+                }
+
+            } catch (e) {
+                console.error("WS parse error", e);
+            }
+        };
+
+        // ----------------------------
+        // onclose — WebSocket закрыт
+        // ----------------------------
+        ws.onclose = (e) => console.log("WS closed", e);
+
+        // ----------------------------
+        // onerror — ошибка WebSocket
+        // ----------------------------
+        ws.onerror = (e) => console.error("WS error", e);
+
+    }).catch(err => {
+        console.error("Не удалось получить JWT для WS:", err);
+    });
+}
+
+/**
+ * wsReconnect — переподключение WebSocket
+ * Используется перед API-запросами
+ */
+async function wsReconnect() {
+    // если ws закрыт или нет
+    if (!ws || ws.readyState === WebSocket.CLOSED) {
+        await connectWebSocket(); // твоя уже существующая функция connectWebSocket()
+    }
+    // иначе ws уже активен — ничего не делаем
+}
+</script>
